@@ -12,6 +12,7 @@ namespace Admin.Controllers
     public class AdminController : Controller
     {
         // GET: Admin
+        // I have added this line to test GitHub
         public ActionResult Index()
         {
             ViewBag.CategoryTree = DBManager.GetCategoryTree();
