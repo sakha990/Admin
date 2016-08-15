@@ -14,7 +14,7 @@ namespace Admin.Controllers
     public class ProductController : Controller
     {
 
-        public ActionResult Index(int categoryId, string sortOrder = "productname", int page = 1, int pageSize = 2)
+        public ActionResult Index(int categoryId, string sortOrder = "productname", int page = 1, int pageSize = 10)
         {
             Category category = DBManager.GetCategoryObject(categoryId);
             ViewBag.CategoryId = categoryId;
@@ -54,8 +54,11 @@ namespace Admin.Controllers
             return View("Index", productList.ToPagedList(page, pageSize));
         }
         //public ActionResult Create(int categoryId,string productName = "",bool previousInsert = false)
-         public ActionResult Create(int categoryId)
+         public ActionResult Create(int categoryId,string previousProductName,bool productCreated = false)
         {
+            ViewBag.PreviousProductName = previousProductName;
+            ViewBag.ProductCreated = productCreated;
+
             Category category = DBManager.GetCategoryObject(categoryId);
             ViewBag.CategoryId = categoryId;
             ViewBag.ParentCategoryName = category.ParentCategoryName;
@@ -70,22 +73,50 @@ namespace Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                DBManager.CreateProduct("sakha", product.CategoryId, product.ProductName);
-                return RedirectToAction("Create", new { categoryId = product.CategoryId });
+                
+                var query = from productList in DBManager.GetProducts(product.CategoryId).AsQueryable<Product>()
+                            where productList.ProductName == product.ProductName
+                            select productList.ProductName;
+                if (query.SingleOrDefault() == product.ProductName)
+                {
+                    Category category = DBManager.GetCategoryObject(product.CategoryId);
+                    ViewBag.CategoryId = product.CategoryId;
+                    ViewBag.ParentCategoryName = category.ParentCategoryName;
+                    ViewBag.CategoryName = category.CategoryName;
+                    ViewBag.CategoryTree = DBManager.GetCategoryTree();
+                    ViewBag.ProductCreated = false;
+                    ModelState.AddModelError("", "Duplicate Product Name");
+                    return View("Create", product);
+
+                }
+                else
+                {     
+
+                    bool productCreated = DBManager.CreateProduct("sakha", product.CategoryId, product.ProductName);
+                    return RedirectToAction("Create", new { categoryId = product.CategoryId, previousProductName = product.ProductName,productCreated = productCreated });
+                }
             }
             else
             {
-                ModelState.AddModelError(String.Empty, "name is required");
-                return RedirectToAction("Create", new { categoryId = product.CategoryId });
-
+                
+                Category category = DBManager.GetCategoryObject(product.CategoryId);
+                ViewBag.CategoryId = product.CategoryId;
+                ViewBag.ParentCategoryName = category.ParentCategoryName;
+                ViewBag.CategoryName = category.CategoryName;
+                ViewBag.CategoryTree = DBManager.GetCategoryTree();
+                ViewBag.ProductCreated = false;
+                return View("Create",product );
             }
         }
 
         [HttpPost]
-        public ActionResult Delete(FormCollection collection)
+        public ActionResult Delete(Product product)
         {
-            int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-            int productId = Convert.ToInt32(collection["inputProductId"]);
+            //int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
+            //int productId = Convert.ToInt32(collection["inputProductId"]);
+
+            int categoryId = product.CategoryId;
+            int productId = product.ProductId;
 
             DBManager.DeleteProduct(productId);
             return RedirectToAction("Index", new { categoryId = categoryId });

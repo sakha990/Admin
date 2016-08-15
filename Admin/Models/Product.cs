@@ -12,7 +12,7 @@ namespace Admin.Models
 
         public int ProductId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Product Name is empty!")]
         [DisplayName("Product Name")]
         public string ProductName { get; set; }
 

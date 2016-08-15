@@ -22,6 +22,27 @@ namespace Admin.Repository
             return serializer.Serialize(obj);
         }
 
+        public static IHtmlString GetMessage(this HtmlHelper htmlHelper, bool messageType, string itemName)
+        {
+            string successMessage = "<strong> Success! <strong>  " + itemName + " is created!";
+            string failureMessage = "<strong> Failure! <strong>  " + itemName + " is NOT created. Contact administrator!";
+            var paragraph = new TagBuilder("p");
+                if (!String.IsNullOrEmpty(itemName))
+                { 
+                    if (messageType)
+                    {
+                        paragraph.Attributes["class"] = "text-success";
+                        paragraph.InnerHtml = successMessage;
+                    }
+                    else
+                    {
+                        paragraph.Attributes["class"] = "text-danger";
+                        paragraph.InnerHtml = failureMessage;
+                    }
+                }
+            
+            return MvcHtmlString.Create(paragraph.ToString());
+        }
         public static IHtmlString SortIdentifier(this HtmlHelper htmlHelper, string sortOrder, string field)
         {
             if (string.IsNullOrEmpty(sortOrder) || (sortOrder.Trim() != field && sortOrder.Replace("_desc", "").Trim() != field)) return null;

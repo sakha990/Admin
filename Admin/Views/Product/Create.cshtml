@@ -1,7 +1,10 @@
 ﻿@model Admin.Models.Product
+@using Admin.Repository
 @{
     ViewBag.Title = "Create Product";
     Layout = "~/Views/Shared/Master.cshtml";
+    string previousProductName = ViewBag.PreviousProductName;
+    bool productCreated = (bool)ViewBag.ProductCreated;
 }
 
 <h2>Create</h2>
@@ -14,7 +17,7 @@
         
         <form class="form-horizontal" action="/Product/Create" method="post">
             <fieldset>
-                <legend>@Html.ValidationSummary(true) Create New Product</legend>
+                <legend>Create New Product</legend>
 
                 @*@if (ViewBag.PreviousInsert)
             {
@@ -32,7 +35,10 @@
                 }
 
             }*@
-                
+                <div class="form-group">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    @Html.GetMessage(productCreated,previousProductName)
+                </div>
                 <div class="form-group">
                     <label for="inputParentCategory" class="col-lg-2 control-label">Category</label>
                     <div class="col-lg-10">
@@ -48,10 +54,14 @@
                 <div class="form-group">
                     @Html.LabelFor(model => model.ProductName, new { @class = "control-label col-md-2" })
                     <div class="col-lg-10">
-                        @Html.TextBoxFor(model => model.ProductName, new { @class = "form-control" })
-                        @Html.ValidationMessage("ProductName", "*")
+                        @Html.TextBoxFor(model => model.ProductName, new { @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("ProductName", "*", new { @class = "text-danger" })
+
                     </div>
+
+
                 </div>
+
                 <div class="form-group">
                     <div class="col-lg-10 col-lg-offset-2">
                         <button type="reset" class="btn btn-default">Cancel</button>

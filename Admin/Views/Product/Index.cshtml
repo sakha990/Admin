@@ -50,37 +50,32 @@
             </tr>
             @foreach (var product in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(p => product.ProductName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(p => product.CreatedBy)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(p => product.CreatedDate)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(p => product.LastUpdatedBy)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(p => product.LastUpdatedDate)
-                    </td>
-                    <td>
-                        @using (Html.BeginForm("Delete", "Product"))
-                        {
-                            <input type="hidden" name="inputCategoryId" value="@product.CategoryId" />
-                            <input type="hidden" name="inputProductId" value="@product.ProductId" />
+                using (Html.BeginForm("Delete", "Product"))
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(p => product.ProductName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(p => product.CreatedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(p => product.CreatedDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(p => product.LastUpdatedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(p => product.LastUpdatedDate)
+                        </td>
+                        <td>
+                            @Html.HiddenFor(p => product.CategoryId)
+                            @Html.HiddenFor(p => product.ProductId)
                             <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
-                        }
-
-                    </td>
-
-
-
-                </tr>
+                        </td>
+                    </tr>
+                }
             }
-
         </table>
 
     </div>
@@ -102,3 +97,8 @@
 
     </div>
 </div>
+
+
+@*<input type="hidden" name="inputCategoryId" value="@product.CategoryId" />
+<input type="hidden" name="inputProductId" value="@product.ProductId" />
+<input type="submit" class="btn btn-danger btn-sm" value="Delete" />*@
