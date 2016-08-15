@@ -1,0 +1,106 @@
+﻿@model Admin.Models.Product
+@{
+    ViewBag.Title = "Create Product";
+    Layout = "~/Views/Shared/Master.cshtml";
+}
+
+<h2>Create</h2>
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+
+    <div class="col-md-9">
+        
+        <form class="form-horizontal" action="/Product/Create" method="post">
+            <fieldset>
+                <legend>@Html.ValidationSummary(true) Create New Product</legend>
+
+                @*@if (ViewBag.PreviousInsert)
+            {
+                <div class="alert alert-dismissible alert-success">
+                    <strong>Success</strong>  <a href="#" class="alert-link"> @ViewBag.ProductName is created!</a>.
+                </div>
+            }
+            else
+            {
+                if (!(@ViewBag.ProductName == string.Empty))
+                {
+                    <div class="alert alert-dismissible alert-danger">
+                        <strong>Failure!</strong> <a href="#" class="alert-link">@ViewBag.ProductName is NOT created! contact administrator!</a> and try submitting again.
+                    </div>
+                }
+
+            }*@
+                
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label">Category</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputParentCategory" value="@ViewBag.ParentCategoryName" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label">Category</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputCategory" value="@ViewBag.CategoryName" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ProductName, new { @class = "control-label col-md-2" })
+                    <div class="col-lg-10">
+                        @Html.TextBoxFor(model => model.ProductName, new { @class = "form-control" })
+                        @Html.ValidationMessage("ProductName", "*")
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+                @Html.HiddenFor(modal => modal.CategoryId)
+            </fieldset>
+
+        </form>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script type="text/javascript">
+    $(document).ready(function () {
+        var success = parseInt('@ViewBag.Success');
+        if (success) {
+            if (success == 1) {
+                $('#modaltext').text('Success Category is created and you can se this newly created category on left side menu under mentioned parent category. you can click on this category to create products');
+                $('#categoryCreateSuccess').modal('show');
+            }
+            else {
+                $('#modaltext').text('Failure There is some problem in creating category. Contact Salman!');
+                $('#categoryCreateSuccess').modal('show');
+
+            }
+        }
+    });
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

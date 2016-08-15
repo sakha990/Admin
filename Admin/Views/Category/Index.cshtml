@@ -1,0 +1,68 @@
+﻿@model IEnumerable<Admin.Models.Category>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Master.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+    <div class="col-md-9">
+        <h2>@ViewBag.ParentCategoryName</h2>
+        <table class="table">
+            <tr>
+                <th>
+                    Category Name
+                </th>
+                <th>
+                    Created By
+                </th>
+                <th>
+                    Created Date
+                </th>
+
+                <th>
+                    Last Updated BY
+                </th>
+                <th>
+                    Last Updated Date
+                </th>
+                <th>
+                    @Html.ActionLink("Create New Category", "Create", new { controller = "Category", parentCategory = @ViewBag.ParentCategory }, new { @class = "btn btn-success" })
+                </th>
+            </tr>
+            @foreach (var category in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.ActionLink(category.CategoryName, "Index", new { controller = "Product", categoryId = category.CategoryId })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => category.CreatedBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => category.CreatedDate)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Parameters", "Index", new { controller = "CategoryParameter", categoryId = category.CategoryId }, new { @class = "btn btn-success btn-sm" })
+                    </td>
+
+                    <td>
+                        @using (Html.BeginForm("Delete", "Category"))
+                        {
+                            <input type="hidden" name="inputParentCategory" value=@ViewBag.ParentCategory />
+                            <input type="hidden" name="inputCategoryId" value=@category.CategoryId />
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
+                        }
+
+                    </td>
+
+                </tr>
+            }
+
+        </table>
+    </div>
+</div>
+
+
+

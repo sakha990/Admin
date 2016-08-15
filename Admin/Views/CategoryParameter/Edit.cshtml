@@ -1,0 +1,56 @@
+﻿
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/Master.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (IEnumerable<Admin.Models.ParentChildCategories>)ViewBag.categoryTree)
+    </div>
+
+    <div class="col-md-9">
+        <form class="form-horizontal" action="/CategoryParameter/Edit" method="post">
+            <fieldset>
+                <legend>Parameter Details</legend>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label">Parent Category Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputParentCategory" value="@ViewBag.ParentCategoryName" disabled="disabled">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label"> Category Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputCategory" value="@ViewBag.CategoryName" disabled="disabled">
+                    </div>
+                </div>
+                <input type="hidden" name="inputCategoryId" value="@ViewBag.CategoryId" />
+                <div class="form-group">
+                    <label for="inputCategoryParameterName" class="col-lg-2 control-label">Parameter Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputCategoryParameterName" value=@ViewBag.CategoryParameterName >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputCategoryParameterValues" class="col-lg-2 control-label">Parameter Values</label>
+                    <div class="col-lg-10">
+                        <textarea class="form-control" name="inputCategoryParameterValues">@ViewBag.CategoryParameterValues</textarea>
+                        <span class="help-block">Comma separated values.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-success">Update</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+

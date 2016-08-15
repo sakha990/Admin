@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Master.cshtml";
+}
+
+<h3>Categories</h3>
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+
+    <div class="col-md-9">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h4>Total No of Products Per Catgory</h4> </div>
+                <ul class="list-group">
+                    <li class="list-group-item"><a>Cras justo odio</a></li>
+                    <li class="list-group-item"><a>Dapibus ac facilisis in</a></li>
+                    <li class="list-group-item"><a>Morbi leo risus</a></li>
+                    <li class="list-group-item"><a>Porta ac consectetur ac</a></li>
+                    <li class="list-group-item"><a>Vestibulum at eros</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <h4>Subheading</h4>
+            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
+
+            <h4>Subheading</h4>
+            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
+
+            <h4>Subheading</h4>
+            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
+
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewBag.Title = "Create CategoryParameter";
+    Layout = "~/Views/Shared/Master.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (IEnumerable<Admin.Models.ParentChildCategories>)ViewBag.categoryTree)
+    </div>
+
+    <div class="col-md-9">
+        <form class="form-horizontal" action="/CategoryParameter/Create" method="post">
+            <fieldset>
+                <legend>Create New Parameter</legend>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label">Parent Category Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputParentCategory" value="@ViewBag.ParentCategoryName" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label"> Category Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" name="inputCategory" value="@ViewBag.CategoryName" readonly="readonly">
+                    </div>
+                </div>
+                <input type="hidden" name="inputCategoryId" value="@ViewBag.CategoryId" />
+                <div class="form-group">
+                    <label for="inputParamter" class="col-lg-2 control-label">Parameter Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" id="inputParamterName" name="inputParamterName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputParamter" class="col-lg-2 control-label">Parameter Values</label>
+                    <div class="col-lg-10">
+                        <textarea class="form-control" rows="3" id="inputParamterValues" name="inputParamterValues"></textarea>
+                        <span class="help-block">Comma separated values.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+

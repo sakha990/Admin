@@ -1,0 +1,104 @@
+﻿@model PagedList.IPagedList<Admin.Models.Product>
+@using Admin.Repository;
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Master.cshtml";
+    int categoryId = (int)ViewBag.CategoryId;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "productname";
+    }
+}
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+    <div class="col-md-9">
+        <h2>@ViewBag.ParentCategoryName ->  @ViewBag.CategoryName</h2>
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.ActionLink("Product Name", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.ProductNameSortParam))
+                    @Html.SortIdentifier(currentSort, "productname")
+
+                </th>
+                <th>
+                    @Html.ActionLink("Created By", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.CreatedBySortParam))
+                    @Html.SortIdentifier(currentSort, "createdby")
+
+                </th>
+                <th>
+                    @Html.ActionLink("Created Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.CreatedDateSortParam))
+                    @Html.SortIdentifier(currentSort, "createddate")
+                </th>
+                <th>
+                    @Html.ActionLink("Last Updated BY", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.LastUpdatedBySortParam))
+                    @Html.SortIdentifier(currentSort, "lastupdatedby")
+                </th>
+
+                <th>
+                    @Html.ActionLink("Last Updated Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.LastUpdatedDateSortParam))
+                    @Html.SortIdentifier(currentSort, "lastupdateddate")
+                </th>
+
+                <th>
+                    @Html.ActionLink("Create New Product", "Create", new { controller = "Product", categoryId = @ViewBag.CategoryId }, new { @class = "btn btn-success" })
+                </th>
+            </tr>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(p => product.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.CreatedBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.CreatedDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.LastUpdatedBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.LastUpdatedDate)
+                    </td>
+                    <td>
+                        @using (Html.BeginForm("Delete", "Product"))
+                        {
+                            <input type="hidden" name="inputCategoryId" value="@product.CategoryId" />
+                            <input type="hidden" name="inputProductId" value="@product.ProductId" />
+                            <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
+                        }
+
+                    </td>
+
+
+
+                </tr>
+            }
+
+        </table>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+        @if (Model.PageCount > 1)
+        {
+            <div class="pager">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new
+           {
+               categoryId = (int)@ViewBag.CategoryId,
+               page,
+               sortOrder = ViewBag.currentSort
+           }))
+                Side @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) af @Model.PageCount
+            </div>
+        }
+
+    </div>
+</div>

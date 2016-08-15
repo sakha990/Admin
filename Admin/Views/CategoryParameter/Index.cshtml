@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Admin.Models.CategoryParameter>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/Master.cshtml";
+}
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (IEnumerable<Admin.Models.ParentChildCategories>)ViewBag.CategoryTree)
+    </div>
+    <div class="col-md-9">
+        <h2>@ViewBag.CategoryName</h2>
+        <table class="table">
+            <tr>
+                <th>
+                    Parameter Name
+                </th>
+                <th>
+                    @Html.ActionLink("Create New Parameter", "Create", new { controller = "CategoryParameter", categoryId = @ViewBag.CategoryId }, new { @class = "btn btn-success" })
+                </th>
+            </tr>
+            @foreach (var categoryParameter in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(item => categoryParameter.ParameterName)
+                        <br />
+                        Parameter Values:
+                        @Html.DisplayFor(item => categoryParameter.ParameterValues)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { controller = "CategoryParameter", categoryId = @ViewBag.CategoryId, categoryParameterName = categoryParameter.ParameterName }, new { @class = "btn btn-success  btn-sm" })
+                        @Html.ActionLink("Delete", "Delete", new { controller = "CategoryParameter", categoryId = @ViewBag.CategoryId, categoryParameterName = categoryParameter.ParameterName }, new { @class = "btn btn-danger  btn-sm", @href = "javascript:confirmDelete('" + @ViewBag.CategoryId + "','" + @categoryParameter.ParameterName + "');" })
+
+                        @*@using (Html.BeginForm("Delete", "CategoryParameter"))
+                            {
+                                <input type="hidden" name="inputCategoryId" value=@ViewBag.CategoryId />
+                                <input type="hidden" name="inputCategoryParameterName" value=@categoryParameter.ParameterName />
+                                <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
+                            }*@
+                    </td>
+
+                </tr>
+
+            }
+        </table>
+    </div>
+</div>
+
+<div class="modal" id="deleteConfirmModal">
+    @using (Html.BeginForm("Delete", "CategoryParameter", FormMethod.Post, new { id = "deleteForm" }))
+    {
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Confirmation</h4>
+                </div>
+                <div class="modal-body">
+
+                    <input type="text" name="inputCategoryId" value="" />
+                    <input type="text" name="inputCategoryParameterName" value="" />
+
+                    <p> Are you sure, you want to delete </p>
+                    <p id="modalCategoryId"></p>
+                    <p id="modalCategoryParameterName"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="deleteConfirm">Delete Notification</button>
+                </div>
+
+
+            </div>
+        </div>
+    }
+</div>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script type="text/javascript">
+    var Category;
+    var Parameter;
+    function confirmDelete(categoryId, categoryParameterName) {
+        Category = categoryId;
+        Parameter = categoryParameterName;
+        $('#modalCategoryId').text(categoryId);
+        $('#modalCategoryParameterName').text(categoryParameterName);
+        //alert($('#inputCategoryId').val());
+        $('#deleteConfirmModal').modal('show');
+    }
+    $(function () {
+        $("#deleteConfirmModal").on('click', "#deleteConfirm", function () {
+            $('#inputCategoryId').val(Category);
+            $('#inputCategoryParameterName').val(Parameter);
+            alert(Parameter);
+            $('#deleteForm').submit();
+        });
+    });
+</script>
+
+

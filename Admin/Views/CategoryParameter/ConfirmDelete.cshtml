@@ -1,0 +1,45 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ConfirmDelete</title>
+</head>
+<body>
+    @using (Html.BeginForm("Delete", "CategoryParameter"))
+    {
+        <input type="hidden" name="inputCategoryId" value=@ViewBag.CategoryId />
+        <input type="hidden" name="inputCategoryParameterName" value=@ViewBag.CategoryParameterName />
+        <div class="modal" id="deleteConfirmModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p> Are you sure, you want to delete paramter <strong>@ViewBag.CategoryParameterName</strong></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</body>
+</html>
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#deleteConfirmModal').modal('show');
+    });
+</script>
+
+
