@@ -110,16 +110,12 @@ namespace Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(Product product)
+        public JsonResult Delete(Product product)
         {
             //int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-            //int productId = Convert.ToInt32(collection["inputProductId"]);
-
-            int categoryId = product.CategoryId;
-            int productId = product.ProductId;
-
-            DBManager.DeleteProduct(productId);
-            return RedirectToAction("Index", new { categoryId = categoryId });
+            bool result = DBManager.DeleteProduct(product.ProductId);
+            return Json(result);
+            //return RedirectToAction("Index", new { categoryId = product.CategoryId });
         }
     }
 }

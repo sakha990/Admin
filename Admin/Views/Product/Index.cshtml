@@ -50,8 +50,6 @@
             </tr>
             @foreach (var product in Model)
             {
-                using (Html.BeginForm("Delete", "Product"))
-                {
                     <tr>
                         <td>
                             @Html.DisplayFor(p => product.ProductName)
@@ -71,13 +69,12 @@
                         <td>
                             @Html.HiddenFor(p => product.CategoryId)
                             @Html.HiddenFor(p => product.ProductId)
-                            <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
+                            <a class="btn btn-danger btn-sm" value="Delete" onclick="ConfirmDelete('@AdminHelper.ToJson(product)');">Delete</a>
                         </td>
                     </tr>
-                }
+                
             }
         </table>
-
     </div>
 </div>
 <div class="row">
@@ -94,11 +91,82 @@
                 Side @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) af @Model.PageCount
             </div>
         }
+    </div>
+</div>
 
+@*Confirmation Modal*@
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+            </div>
+            <div id="deleteModalBody" class="modal-body">
+                <p>Are you sure, you want to delete following product? </p>
+                <p id="modalProductName" class="text-danger"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <a class="btn btn-danger btn-ok" data-dismiss="modal" onclick="DeleteProduct();">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Success Message Modal*@
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="messageModalTitle"></h4>
+            </div>
+            <div id="messageModalBody" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ReturnToCategoryPage();">Return to Products</button>
+            </div>
+        </div>
     </div>
 </div>
 
 
-@*<input type="hidden" name="inputCategoryId" value="@product.CategoryId" />
-<input type="hidden" name="inputProductId" value="@product.ProductId" />
-<input type="submit" class="btn btn-danger btn-sm" value="Delete" />*@
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script type="text/javascript">
+    var jsonProduct;
+
+    function ConfirmDelete(product) {
+            jsonProduct = jQuery.parseJSON(product);
+            $('#confirmDeleteModal').modal('show');
+    }
+    function DeleteProduct() {
+            $.ajax({
+                url: '/Product/Delete',
+                data: jsonProduct,
+                type: 'POST',
+                dataType: "json",
+                success: function (result) {
+                        if (result) {
+                            $('#messageModalTitle').text('Success');
+                            $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonProduct["ProductName"] + ' </strong> is successfully deleted. </p>');
+                        }
+                        else {
+                            $('#messageModalTitle').text('Failure');
+                            $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonProduct["ProductName"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
+                        }
+                        $('#messageModal').modal('show');
+                },
+                error: function () {
+                     $('#messageModalTitle').text('Failure');
+                     $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonProduct["ProductName"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
+                     $('#messageModal').modal('show');
+                }
+            });
+    }
+    function ReturnToCategoryPage()  {
+            location.href = '@Url.Action("Index", "Product")?categoryId=' + jsonProduct["CategoryId"];
+    }
+</script>
+
