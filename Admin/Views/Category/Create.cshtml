@@ -1,6 +1,12 @@
-﻿@{
-    ViewBag.Title = "CreateCategory";
+﻿@model Admin.Models.Category
+@using Admin.Repository
+
+@{
+    ViewBag.Title = "Create Category";
     Layout = "~/Views/Shared/Master.cshtml";
+    string previousItemName = ViewBag.PreviousCategoryName;
+    bool success = (bool)ViewBag.Success;
+
 }
 
 <div class="row">
@@ -13,21 +19,31 @@
             <fieldset>
                 <legend>Create New Category</legend>
                 <div class="form-group">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    @Html.GetMessage(success, previousItemName)
+                </div>
+                <div class="form-group">
                     <label for="inputParentCategory" class="col-lg-2 control-label">Parent Category</label>
                     <div class="col-lg-10">
-                        <input type="text" class="form-control" name="inputParentCategory" value="@ViewBag.ParentCategory" readonly="readonly">
+                        <input type="text" class="form-control" name="inputParentCategory" value=@ViewBag.ParentCategoryName readonly="readonly">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputCategory" class="col-lg-2 control-label">Category</label>
+                    @Html.LabelFor(model => model.CategoryName, new { @class = "control-label col-md-2" })
                     <div class="col-lg-10">
-                        <input type="text" class="form-control" id="inputCategory" name="inputCategory">
+                        @Html.TextBoxFor(model => model.CategoryName, new { @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("CategoryName", "*", new { @class = "text-danger" })
+
                     </div>
                 </div>
+
+
+
                 <div class="form-group">
                     <div class="col-lg-10 col-lg-offset-2">
                         <button type="reset" class="btn btn-default">Cancel</button>
                         <button type="submit" class="btn btn-primary">Create</button>
+                        @Html.HiddenFor(modal => modal.ParentCategoryName)
                     </div>
                 </div>
             </fieldset>

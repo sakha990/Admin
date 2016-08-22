@@ -25,8 +25,11 @@ namespace Admin.Controllers
         }
 
         // GET: Parameter/Create
-        public ActionResult Create(int categoryId)
+        public ActionResult Create(int categoryId, string previousItem, bool success = false)
         {
+            ViewBag.PreviousItem = previousItem;
+            ViewBag.Success = success;
+
             Category category = DBManager.GetCategoryObject(categoryId);
             ViewBag.CategoryId = category.CategoryId;
             ViewBag.CategoryName = category.CategoryName;
@@ -37,41 +40,66 @@ namespace Admin.Controllers
 
         // POST: Parameter/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(CategoryParameter categoryParameter)
         {
-            int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-            string parameterName = Convert.ToString(collection["inputParamterName"]);
-            string parameterValues = Convert.ToString(collection["inputParamterValues"]);
-            DBManager.CreateCategoryParameter(categoryId, parameterName, parameterValues, "sakha");
-            return RedirectToAction("Index", new { categoryId = categoryId });
+            Category category = DBManager.GetCategoryObject(categoryParameter.CategoryId);
+            ViewBag.CategoryName = category.CategoryName;
+            ViewBag.ParentCategoryName = category.ParentCategoryName;
+            ViewBag.CategoryTree = DBManager.GetCategoryTree();
+
+            if (ModelState.IsValid)
+            {
+                bool success = DBManager.CreateCategoryParameter(categoryParameter, "sakha");
+                return RedirectToAction("Create", new { categoryId = categoryParameter.CategoryId, previousItem = categoryParameter.Name, success = success });
+
+            }
+            else
+            {
+                ViewBag.Success = false;
+                return View("Create", categoryParameter);
+            }
 
         }
 
         // GET: Parameter/Edit/5
-        public ActionResult Edit(int categoryId, string categoryParameterName)
+        public ActionResult Edit(int categoryParameterId,string previousItem)
         {
-            Category category = DBManager.GetCategoryObject(categoryId);
-            ViewBag.CategoryId = category.CategoryId;
+            CategoryParameter categoryParameter = DBManager.GetCategoryParameter(categoryParameterId);
+            Category category = DBManager.GetCategoryObject(categoryParameter.CategoryId);
             ViewBag.CategoryName = category.CategoryName;
             ViewBag.ParentCategoryName = category.ParentCategoryName;
-            ViewBag.CategoryParameterName = categoryParameterName;
-            ViewBag.CategoryParameterValues = DBManager.GetCategoryParameterValues(categoryId, categoryParameterName);
             ViewBag.CategoryTree = DBManager.GetCategoryTree();
-            return View("Edit");
+            ViewBag.Success = false;
+            ViewBag.PreviousItem = previousItem;
+            return View("Edit",categoryParameter);
         }
 
         // POST: Parameter/Edit/5
         [HttpPost]
-        public ActionResult Edit(FormCollection collection)
+        public ActionResult Edit(CategoryParameter categoryParameter)
         {
-            int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-            string userName = "sakha";
-            CategoryParameter categoryParameter = new CategoryParameter();
-            categoryParameter.ParameterName = Convert.ToString(collection["inputCategoryParameterName"]);
-            categoryParameter.ParameterValues = Convert.ToString(collection["inputCategoryParameterValues"]);
-            DBManager.UpdateCategoryParameter(categoryId, userName, categoryParameter);
-            return RedirectToAction("Index", new { categoryId = categoryId });
+            Category category = DBManager.GetCategoryObject(categoryParameter.CategoryId);
+            ViewBag.CategoryName = category.CategoryName;
+            ViewBag.ParentCategoryName = category.ParentCategoryName;
+            ViewBag.CategoryTree = DBManager.GetCategoryTree();
+
+            if (ModelState.IsValid)
+            {
+                DBManager.UpdateCategoryParameter("sakha", categoryParameter);
+                ViewBag.Success= true;
+                ViewBag.PreviousItem = categoryParameter.Name;
+                return View("Edit", categoryParameter);
+            }
+            else
+            {
+                ViewBag.Success = false;
+                return View("Edit", categoryParameter);
+            }
+
+
         }
+
+
 
         public ActionResult Delete(int categoryId,string categoryParameterName)
         {
@@ -82,13 +110,10 @@ namespace Admin.Controllers
         }
         // POST: Parameter/Delete/5
         [HttpPost]
-        public ActionResult Delete(FormCollection collection)
+        public JsonResult Delete(CategoryParameter categoryParameter)
         {
-            int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-            string categoryParameterName = Convert.ToString(collection["inputCategoryParameterName"]);
-            DBManager.DeleteCategoryParameter(categoryId, categoryParameterName);
-            return RedirectToAction("Index", new { categoryId = categoryId });
-
+            bool result = DBManager.DeleteCategoryParameter(categoryParameter.CategoryId, categoryParameter.Name);
+            return Json(result);
         }
     }
 }

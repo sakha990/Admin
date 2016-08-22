@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Admin.Models.Category>
+@using Admin.Repository;
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Master.cshtml";
@@ -28,7 +29,7 @@
                     Last Updated Date
                 </th>
                 <th>
-                    @Html.ActionLink("Create New Category", "Create", new { controller = "Category", parentCategory = @ViewBag.ParentCategory }, new { @class = "btn btn-success" })
+                    @Html.ActionLink("Create New Category", "Create", new { controller = "Category", parentCategoryName = @ViewBag.ParentCategoryName }, new { @class = "btn btn-success" })
                 </th>
             </tr>
             @foreach (var category in Model)
@@ -48,21 +49,94 @@
                     </td>
 
                     <td>
-                        @using (Html.BeginForm("Delete", "Category"))
-                        {
-                            <input type="hidden" name="inputParentCategory" value=@ViewBag.ParentCategory />
-                            <input type="hidden" name="inputCategoryId" value=@category.CategoryId />
-                            <input type="submit" class="btn btn-danger btn-sm" value="Delete" />
-                        }
-
+                        @Html.HiddenFor(c => category.ParentCategoryName)
+                        @Html.HiddenFor(c => category.CategoryId)
+                       <a class="btn btn-danger btn-sm" value="Delete" onclick="ConfirmDelete('@AdminHelper.ToJson(category)');">Delete</a>
                     </td>
-
                 </tr>
             }
 
         </table>
     </div>
 </div>
+
+@*Confirmation Modal*@
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+            </div>
+            <div id="deleteModalBody" class="modal-body">
+                <p>Are you sure, you want to delete following category? </p>
+                <p id="modalCategoryName" class="text-danger"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <a class="btn btn-danger btn-ok" data-dismiss="modal" onclick="DeleteCategory();">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Success Message Modal*@
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="messageModalTitle"></h4>
+            </div>
+            <div id="messageModalBody" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ReturnToParentCategoryPage();">Return to Parent Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script type="text/javascript">
+    var jsonCategory;
+
+    function ConfirmDelete(category) {
+        jsonCategory = jQuery.parseJSON(category);
+        $('#modalCategoryName').text(jsonCategory["CategoryName"]);
+        $('#confirmDeleteModal').modal('show');
+    }
+    function DeleteCategory() {
+            $.ajax({
+                url: '/Category/Delete',
+                data: jsonCategory,
+                type: 'POST',
+                dataType: "json",
+                success: function (result) {
+                        if (result) {
+                            $('#messageModalTitle').text('Success');
+                            $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonCategory["CategoryName"] + ' </strong> is successfully deleted. </p>');
+                        }
+                        else {
+                            $('#messageModalTitle').text('Failure');
+                            $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonCategory["CategoryName"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
+                        }
+                        $('#messageModal').modal('show');
+                },
+                error: function () {
+                     $('#messageModalTitle').text('Failure');
+                     $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonCategory["CategoryName"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
+                     $('#messageModal').modal('show');
+                }
+            });
+    }
+    function ReturnToParentCategoryPage()  {
+        location.href = '@Url.Action("Index", "Category")?parentCategoryName=' + jsonCategory["ParentCategoryName"];
+    }
+</script>
+
 
 
 

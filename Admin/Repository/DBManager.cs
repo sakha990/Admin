@@ -107,7 +107,7 @@ namespace Admin.Repository
         public static List<CategoryParameter> GetCategoryParameters(int categoryId)
         {
             List<CategoryParameter> categoryParameters = new List<CategoryParameter>();
-            string queryString = @"select parameterName,parameterValues from CompareAdmin.dbo.CategoryParameters WHERE categoryID = @categoryId";
+            string queryString = @"select categoryParameterID,categoryID,parameterName,parameterValues,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate from CompareAdmin.dbo.CategoryParameters WHERE categoryID = @categoryId";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -118,15 +118,48 @@ namespace Admin.Repository
                 while (reader.Read())
                 {
                     CategoryParameter categoryParamter = new CategoryParameter();
-                    categoryParamter.ParameterName = Convert.ToString(reader[0]);
-                    categoryParamter.ParameterValues= Convert.ToString(reader[1]);
+                    categoryParamter.ParameterId = Convert.ToInt32(reader[0]);
+                    categoryParamter.CategoryId = Convert.ToInt32(reader[1]);
+                    categoryParamter.Name       = Convert.ToString(reader[2]);
+                    categoryParamter.Values     = Convert.ToString(reader[3]);
+                    categoryParamter.CreatedBy = Convert.ToString(reader[4]);
+                    categoryParamter.CreatedDate = Convert.ToDateTime(reader[5]);
+                    categoryParamter.LastUpdatedBy = Convert.ToString(reader[6]);
+                    if (!((reader[7]) == DBNull.Value))
+                        categoryParamter.LastUpdatedDate = Convert.ToDateTime(reader[7]);
+
                     categoryParameters.Add(categoryParamter);
                 }
             }
             return categoryParameters;
         }
-
-        public static bool CreateCategory(string category,string parentCategory,string userName)
+        public static CategoryParameter GetCategoryParameter(int categoryParameterId)
+        {
+            CategoryParameter categoryParameter = new CategoryParameter();
+            string queryString = @"select categoryParameterID,categoryID,parameterName,parameterValues,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate from CompareAdmin.dbo.CategoryParameters WHERE categoryParameterID = @categoryParameterId";
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.Add("@categoryParameterId", SqlDbType.Int).Value = categoryParameterId;
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    categoryParameter.ParameterId = Convert.ToInt32(reader[0]);
+                    categoryParameter.CategoryId = Convert.ToInt32(reader[1]);
+                    categoryParameter.Name = Convert.ToString(reader[2]);
+                    categoryParameter.Values = Convert.ToString(reader[3]);
+                    categoryParameter.CreatedBy = Convert.ToString(reader[4]);
+                    categoryParameter.CreatedDate = Convert.ToDateTime(reader[5]);
+                    categoryParameter.LastUpdatedBy = Convert.ToString(reader[6]);
+                    if (!((reader[7]) == DBNull.Value))
+                        categoryParameter.LastUpdatedDate = Convert.ToDateTime(reader[7]);
+                }
+            }
+            return categoryParameter;
+        }
+        public static bool CreateCategory(Category category,string userName)
         {
             string queryString = @"INSERT INTO CompareAdmin.dbo.Categories(categoryName, parentCategoryName, createdBy, createdDate) VALUES(@category, @parentCategory, @createdBy, SYSDATETIME());";
             using (SqlConnection connection = new SqlConnection(
@@ -134,8 +167,8 @@ namespace Admin.Repository
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.Add("@category", SqlDbType.NVarChar).Value = category;
-                command.Parameters.Add("@parentCategory", SqlDbType.NVarChar).Value= parentCategory;
+                command.Parameters.Add("@category", SqlDbType.NVarChar).Value = category.CategoryName;
+                command.Parameters.Add("@parentCategory", SqlDbType.NVarChar).Value= category.ParentCategoryName;
                 command.Parameters.Add("@createdBy", SqlDbType.VarChar).Value= userName;
 
                 if (command.ExecuteNonQuery() == 1)
@@ -162,24 +195,23 @@ namespace Admin.Repository
             }
         }
 
-        public static bool UpdateCategoryParameter(int categoryId,string userName,CategoryParameter categoryParameter)
+        public static bool UpdateCategoryParameter(string userName,CategoryParameter categoryParameter)
         {
             string queryString = @" UPDATE CompareAdmin.dbo.CategoryParameters
                                     SET parameterValues = @parameterValues
-                                       ,updatedBy = @updatedBy
-                                       ,updatedDate = SYSDATETIME()
-                                    WHERE categoryID = @categoryID 
-                                    AND parameterName = @parameterName";
+                                       ,lastUpdatedBy = @lastupdatedBy
+                                       ,lastUpdatedDate = SYSDATETIME()
+                                    WHERE categoryParameterID = @categoryParameterId ";
+
 
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.Add("@parameterValues", SqlDbType.NVarChar).Value = categoryParameter.ParameterValues;
-                command.Parameters.Add("@updatedBy", SqlDbType.VarChar).Value = userName;
-                command.Parameters.Add("@categoryID", SqlDbType.Int).Value = categoryId;
-                command.Parameters.Add("@parameterName", SqlDbType.NVarChar).Value = categoryParameter.ParameterName;
+                command.Parameters.Add("@parameterValues", SqlDbType.NVarChar).Value = categoryParameter.Values;
+                command.Parameters.Add("@lastUpdatedBy", SqlDbType.VarChar).Value = userName;
+                command.Parameters.Add("@categoryParameterId", SqlDbType.Int).Value = categoryParameter.ParameterId;
 
                 if (command.ExecuteNonQuery() == 1)
                     return true;
@@ -188,7 +220,7 @@ namespace Admin.Repository
             }
         }
 
-        public static bool DeleteCategoryParameter(int categoryId, string categoryParameterName)
+        public static bool DeleteCategoryParameter(int categoryId, string parameterName)
         {
             string queryString = @" DELETE FROM CompareAdmin.dbo.CategoryParameters
                                     WHERE categoryID = @categoryID 
@@ -200,7 +232,7 @@ namespace Admin.Repository
                 connection.Open();
                 SqlCommand command = new SqlCommand(queryString, connection);
                 command.Parameters.Add("@categoryID", SqlDbType.Int).Value = categoryId;
-                command.Parameters.Add("@parameterName", SqlDbType.NVarChar).Value = categoryParameterName;
+                command.Parameters.Add("@parameterName", SqlDbType.NVarChar).Value = parameterName;
 
                 if (command.ExecuteNonQuery() == 1)
                     return true;
@@ -210,7 +242,7 @@ namespace Admin.Repository
         }
         
 
-        public static bool CreateCategoryParameter(int categoryId, string parameterName, string parameterValues, string userName)
+        public static bool CreateCategoryParameter(CategoryParameter categoryParameter, string userName)
         {
             string queryString = @"INSERT INTO CompareAdmin.dbo.CategoryParameters(categoryID, parameterName,parameterValues,createdBy,createdDate) VALUES(@categoryID, @parameterName,@parameterValues, @createdBy, SYSDATETIME());";
             using (SqlConnection connection = new SqlConnection(
@@ -218,9 +250,9 @@ namespace Admin.Repository
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.Add("@categoryID", SqlDbType.Int).Value = categoryId;
-                command.Parameters.Add("@parameterName", SqlDbType.NVarChar).Value = parameterName;
-                command.Parameters.Add("@parameterValues", SqlDbType.NVarChar).Value = parameterValues;
+                command.Parameters.Add("@categoryID", SqlDbType.Int).Value = categoryParameter.CategoryId;
+                command.Parameters.Add("@parameterName", SqlDbType.NVarChar).Value = categoryParameter.Name;
+                command.Parameters.Add("@parameterValues", SqlDbType.NVarChar).Value = categoryParameter.Values;
                 command.Parameters.Add("@createdBy", SqlDbType.VarChar).Value = userName;
 
                 if (command.ExecuteNonQuery() == 1)

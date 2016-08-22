@@ -177,6 +177,6 @@ C:\GitHub\Admin\Admin\bin\Microsoft.Owin.Security.OAuth.xml
 C:\GitHub\Admin\Admin\bin\Microsoft.Owin.Security.Google.xml
 C:\GitHub\Admin\Admin\bin\Microsoft.Owin.Security.Twitter.xml
 C:\GitHub\Admin\Admin\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
-C:\GitHub\Admin\Admin\obj\Debug\Admin.csprojResolveAssemblyReference.cache
 C:\GitHub\Admin\Admin\obj\Debug\Admin.dll
 C:\GitHub\Admin\Admin\obj\Debug\Admin.pdb
+C:\GitHub\Admin\Admin\obj\Debug\Admin.csprojResolveAssemblyReference.cache

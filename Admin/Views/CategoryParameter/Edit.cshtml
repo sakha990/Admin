@@ -1,11 +1,14 @@
-﻿
+﻿@model Admin.Models.CategoryParameter
+@using Admin.Repository
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Edit Catgory Parameter";
     Layout = "~/Views/Shared/Master.cshtml";
+    string parameterName = ViewBag.PreviousItem;
+    bool Success = (bool)ViewBag.Success;
 }
 <div class="row">
     <div class="col-md-3">
-        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (IEnumerable<Admin.Models.ParentChildCategories>)ViewBag.categoryTree)
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
     </div>
 
     <div class="col-md-9">
@@ -13,28 +16,33 @@
             <fieldset>
                 <legend>Parameter Details</legend>
                 <div class="form-group">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    @Html.GetMessage(Success,parameterName)
+                </div>
+
+                <div class="form-group">
                     <label for="inputParentCategory" class="col-lg-2 control-label">Parent Category Name</label>
                     <div class="col-lg-10">
-                        <input type="text" class="form-control" name="inputParentCategory" value="@ViewBag.ParentCategoryName" disabled="disabled">
+                        <input type="text" class="form-control" value=@ViewBag.ParentCategoryName readonly = "readonly">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputParentCategory" class="col-lg-2 control-label"> Category Name</label>
                     <div class="col-lg-10">
-                        <input type="text" class="form-control" name="inputCategory" value="@ViewBag.CategoryName" disabled="disabled">
-                    </div>
-                </div>
-                <input type="hidden" name="inputCategoryId" value="@ViewBag.CategoryId" />
-                <div class="form-group">
-                    <label for="inputCategoryParameterName" class="col-lg-2 control-label">Parameter Name</label>
-                    <div class="col-lg-10">
-                        <input type="text" class="form-control" name="inputCategoryParameterName" value=@ViewBag.CategoryParameterName >
+                        <input type="text" class="form-control" value=@ViewBag.CategoryName readonly = "readonly">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputCategoryParameterValues" class="col-lg-2 control-label">Parameter Values</label>
+                    @Html.LabelFor(model => model.Name, new { @class = "control-label col-md-2" })
                     <div class="col-lg-10">
-                        <textarea class="form-control" name="inputCategoryParameterValues">@ViewBag.CategoryParameterValues</textarea>
+                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @style = "display:inline",@readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Values, new { @class = "control-label col-md-2" })
+                    <div class="col-lg-10">
+                        @Html.TextAreaFor(model => model.Values, new { @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("ParameterValues", "*", new { @class = "text-danger" })
                         <span class="help-block">Comma separated values.</span>
                     </div>
                 </div>
@@ -42,6 +50,8 @@
                     <div class="col-lg-10 col-lg-offset-2">
                         <button type="reset" class="btn btn-default">Cancel</button>
                         <button type="submit" class="btn btn-success">Update</button>
+                        @Html.HiddenFor(modal => modal.ParameterId)
+                        @Html.HiddenFor(modal => modal.CategoryId)
                     </div>
                 </div>
             </fieldset>

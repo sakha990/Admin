@@ -54,10 +54,10 @@ namespace Admin.Controllers
             return View("Index", productList.ToPagedList(page, pageSize));
         }
         //public ActionResult Create(int categoryId,string productName = "",bool previousInsert = false)
-         public ActionResult Create(int categoryId,string previousProductName,bool productCreated = false)
+         public ActionResult Create(int categoryId,string previousProductName,bool success = false)
         {
             ViewBag.PreviousProductName = previousProductName;
-            ViewBag.ProductCreated = productCreated;
+            ViewBag.Success = success;
 
             Category category = DBManager.GetCategoryObject(categoryId);
             ViewBag.CategoryId = categoryId;
@@ -84,7 +84,7 @@ namespace Admin.Controllers
                     ViewBag.ParentCategoryName = category.ParentCategoryName;
                     ViewBag.CategoryName = category.CategoryName;
                     ViewBag.CategoryTree = DBManager.GetCategoryTree();
-                    ViewBag.ProductCreated = false;
+                    ViewBag.Success = false;
                     ModelState.AddModelError("", "Duplicate Product Name");
                     return View("Create", product);
 
@@ -92,8 +92,8 @@ namespace Admin.Controllers
                 else
                 {     
 
-                    bool productCreated = DBManager.CreateProduct("sakha", product.CategoryId, product.ProductName);
-                    return RedirectToAction("Create", new { categoryId = product.CategoryId, previousProductName = product.ProductName,productCreated = productCreated });
+                    bool success = DBManager.CreateProduct("sakha", product.CategoryId, product.ProductName);
+                    return RedirectToAction("Create", new { categoryId = product.CategoryId, previousProductName = product.ProductName,success = success });
                 }
             }
             else
@@ -104,7 +104,7 @@ namespace Admin.Controllers
                 ViewBag.ParentCategoryName = category.ParentCategoryName;
                 ViewBag.CategoryName = category.CategoryName;
                 ViewBag.CategoryTree = DBManager.GetCategoryTree();
-                ViewBag.ProductCreated = false;
+                ViewBag.Success = false;
                 return View("Create",product );
             }
         }
@@ -112,10 +112,8 @@ namespace Admin.Controllers
         [HttpPost]
         public JsonResult Delete(Product product)
         {
-            //int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
             bool result = DBManager.DeleteProduct(product.ProductId);
             return Json(result);
-            //return RedirectToAction("Index", new { categoryId = product.CategoryId });
         }
     }
 }

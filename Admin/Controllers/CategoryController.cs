@@ -18,31 +18,63 @@ namespace Admin.Controllers
           return View("Index", categories);
         }
 
-        public ActionResult Create(string parentCategory)
+        public ActionResult Create(string parentCategoryName, string previousCategoryName, bool success = false)
         {
-            
+
+            ViewBag.PreviousCategoryName = previousCategoryName;
+            ViewBag.Success = success;
+            ViewBag.ParentCategoryName = parentCategoryName;
+
             ViewBag.categoryTree = DBManager.GetCategoryTree();
-            ViewBag.ParentCategory = parentCategory;
             return View("Create");
         }
 
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(Category category)
         {
-            string category = Convert.ToString(collection["inputCategory"]);
-            string parentCategory = Convert.ToString(collection["inputParentCategory"]);
-            DBManager.CreateCategory(category, parentCategory, "sakha");
-            return RedirectToAction("Index", new { parentCategory = parentCategory });
+            if (ModelState.IsValid)
+            {
+                var query = from categoryList in DBManager.GetCategories(category.ParentCategoryName).AsQueryable<Category>()
+                            where categoryList.CategoryName == category.CategoryName
+                            select categoryList.CategoryName;
+                if (query.SingleOrDefault() == category.CategoryName)
+                {
+                    ViewBag.CategoryTree = DBManager.GetCategoryTree();
+                    ViewBag.Success = false;
+                    ModelState.AddModelError("", "Duplicate Category Name");
+                    return View("Create", category);
+                }
+                else
+                {
+
+                    bool success = DBManager.CreateCategory(category, "sakha");
+                    return RedirectToAction("Create", new { parentCategoryName = category.ParentCategoryName, previousCategoryName = category.CategoryName, success = success });
+                }
+            }
+            else
+            {
+
+                ViewBag.CategoryTree = DBManager.GetCategoryTree();
+                ViewBag.Success = false;
+                return View("Create", category);
+            }
+    }
+
+    [HttpPost]
+        public JsonResult Delete(Category category)
+        {
+            bool result = DBManager.DeleteCategory(category.CategoryId); 
+            return Json(result);
         }
 
-        [HttpPost]
-        public ActionResult Delete(FormCollection collection)
-        {
-            string parentCategory = Convert.ToString(collection["inputParentCategory"]);
-            int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-            DBManager.DeleteCategory(categoryId);
-            return RedirectToAction("Index", new { parentCategory = parentCategory });
+        //public ActionResult Delete(FormCollection collection)
+        //{
+        //    string parentCategory = Convert.ToString(collection["inputParentCategory"]);
+        //    int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
+        //    DBManager.DeleteCategory(categoryId);
+        //    return RedirectToAction("Index", new { parentCategory = parentCategory });
 
-        }
+        //}
+
     }
 }

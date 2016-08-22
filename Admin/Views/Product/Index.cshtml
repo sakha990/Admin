@@ -3,7 +3,7 @@
 @using PagedList.Mvc;
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Products";
     Layout = "~/Views/Shared/Master.cshtml";
     int categoryId = (int)ViewBag.CategoryId;
     string currentSort = ViewBag.CurrentSort;
@@ -139,6 +139,7 @@
 
     function ConfirmDelete(product) {
             jsonProduct = jQuery.parseJSON(product);
+            $('#modalProductName').text(jsonProduct["ProductName"]);
             $('#confirmDeleteModal').modal('show');
     }
     function DeleteProduct() {
