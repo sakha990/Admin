@@ -12,6 +12,41 @@ namespace Admin.Repository
     public static class DBManager
     {
         // Category Section
+        public static bool IsValid(string userName, string password)
+        {
+            bool isValid = false;
+            string queryString = @"SELECT COUNT(*) 
+                                   FROM CompareAdmin.dbo.Users WHERE userName = @userName AND password = @password ";
+
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.Add("@userName", SqlDbType.VarChar).Value = userName;
+                command.Parameters.Add("@password", SqlDbType.VarChar).Value = password;
+                if (Convert.ToInt32(command.ExecuteScalar()) == 1)
+                    isValid = true;
+            }
+            return isValid;
+        }
+        public static string GetRealName(string userName)
+        {
+            string realName = string.Empty;
+            string queryString = @"SELECT realName 
+                                   FROM CompareAdmin.dbo.Users WHERE userName = @userName ";
+
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.Add("@userName", SqlDbType.VarChar).Value = userName;
+                realName  = Convert.ToString(command.ExecuteScalar());
+                    
+            }
+            return realName;
+        }
         public static List<string> GetParerntCategoryNames()
         {
             List<string> parentCategoryNamesList = new List<string>();

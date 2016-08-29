@@ -1,4 +1,5 @@
 ﻿using Microsoft.Owin;
+using Microsoft.Owin.Security.Cookies;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(Admin.Startup))]
@@ -8,7 +9,12 @@ namespace Admin
     {
         public void Configuration(IAppBuilder app)
         {
-            //ConfigureAuth(app);
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = "ApplicationCookie",
+                LoginPath = new PathString("/Admin/Login")
+            });
+
         }
     }
 }
