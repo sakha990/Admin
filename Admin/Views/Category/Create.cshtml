@@ -4,6 +4,7 @@
 @{
     ViewBag.Title = "Create Category";
     Layout = "~/Views/Shared/Master.cshtml";
+    string parentCategoryName = "Back to " + ViewBag.ParentCategoryName;
     string previousItemName = ViewBag.PreviousCategoryName;
     bool success = (bool)ViewBag.Success;
 
@@ -15,6 +16,11 @@
     </div>
 
     <div class="col-md-9">
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink(parentCategoryName, "Index", new { controller = "Category", parentCategoryName = ViewBag.ParentCategoryName })
+        <br /><br /><br />
+
         <form class="form-horizontal" action="/Category/Create" method="post">
             <fieldset>
                 <legend>Create New Category</legend>
@@ -42,7 +48,7 @@
                 <div class="form-group">
                     <div class="col-lg-10 col-lg-offset-2">
                         <button type="reset" class="btn btn-default">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create</button>
+                        <button type="submit" class="btn btn-success">Create</button>
                         @Html.HiddenFor(modal => modal.ParentCategoryName)
                     </div>
                 </div>
@@ -56,19 +62,16 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var success = parseInt('@ViewBag.Success');
-        if (success)
-            {
-                if (success == 1)
-                {
-                    $('#modaltext').text('Success Category is created and you can se this newly created category on left side menu under mentioned parent category. you can click on this category to create products');
-                    $('#categoryCreateSuccess').modal('show');
-                }
-                else
-                {
-                    $('#modaltext').text('Failure There is some problem in creating category. Contact Salman!');
-                    $('#categoryCreateSuccess').modal('show');
+        if (success) {
+            if (success == 1) {
+                $('#modaltext').text('Success Category is created and you can se this newly created category on left side menu under mentioned parent category. you can click on this category to create products');
+                $('#categoryCreateSuccess').modal('show');
+            }
+            else {
+                $('#modaltext').text('Failure There is some problem in creating category. Contact Salman!');
+                $('#categoryCreateSuccess').modal('show');
 
-                }
+            }
         }
     });
 

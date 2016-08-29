@@ -25,12 +25,12 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">MainMenu <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li><a href="/Category/Create">Create New Category</a></li>
                                 <li><a href="/Category/Edit">Edit/Delete Category</a></li>
-                                <li class="divider"></li>
-                                <li><a href="#">One more separated link</a></li>
+                                @*<li class="divider"></li>
+                                <li><a href="#" >One more separated link</a></li>*@
                             </ul>
                         </li>
                     </ul>
@@ -48,7 +48,8 @@
         </div>
     </div>
     <div class="container">
-        @Html.MvcSiteMap().SiteMapPath()
+        @*@Html.MvcSiteMap().SiteMapPath()*@
+
         @RenderBody()
         <footer class="footer">
             <p>&copy; 2016 Compare (pvt) Limited</p>

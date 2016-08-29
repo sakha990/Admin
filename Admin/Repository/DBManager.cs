@@ -159,6 +159,21 @@ namespace Admin.Repository
             }
             return categoryParameter;
         }
+        public static bool CreateParentCategory(string parentCategoryName)
+        {
+            string queryString = @"INSERT INTO CompareAdmin.dbo.ParentCategories VALUES(@parentCategoryName);";
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.Add("@parentCategoryName", SqlDbType.NVarChar).Value = parentCategoryName;
+                if (command.ExecuteNonQuery() == 1)
+                    return true;
+                else
+                    return false;
+            }
+        }
         public static bool CreateCategory(Category category,string userName)
         {
             string queryString = @"INSERT INTO CompareAdmin.dbo.Categories(categoryName, parentCategoryName, createdBy, createdDate) VALUES(@category, @parentCategory, @createdBy, SYSDATETIME());";

@@ -3,7 +3,7 @@
 @using PagedList.Mvc;
 
 @{
-    string parentCategoryName = "Back to " + ViewBag.ParentCategoryName;
+    string parentCategory = "Back to " + ViewBag.ParentCategoryName;
     ViewBag.Title = "Products";
     Layout = "~/Views/Shared/Master.cshtml";
     int categoryId = (int)ViewBag.CategoryId;
@@ -20,11 +20,10 @@
     <div class="col-md-9">
         <br />
         <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
-        @Html.ActionLink(parentCategoryName, "Index", new { controller = "Category", parentCategoryName = ViewBag.ParentCategoryName })
-        <br /><br />
+        @Html.ActionLink(parentCategory, "Index", new { controller = "Category", parentCategoryName = @ViewBag.ParentCategoryName })
+        <br /><br /><br />
 
         <h2>@ViewBag.CategoryName</h2>
-
         <table class="table">
             <tr>
                 <th>

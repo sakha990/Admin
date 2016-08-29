@@ -275,8 +275,6 @@
     <Content Include="Views\Category\Create.cshtml" />
     <Content Include="Views\Shared\CategoryTree.cshtml" />
     <Content Include="Views\Category\Index.cshtml" />
-    <Content Include="Views\Shared\Success.cshtml" />
-    <Content Include="Views\Shared\Failure.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SiteMapTitleHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SiteMapPathHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SiteMapNodeModelList.cshtml" />
@@ -285,13 +283,13 @@
     <Content Include="Views\Shared\DisplayTemplates\MetaRobotsHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\MenuHelperModel.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\CanonicalHelperModel.cshtml" />
-    <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\CategoryParameter\Create.cshtml" />
     <Content Include="Views\CategoryParameter\Details.cshtml" />
     <Content Include="Views\CategoryParameter\Index.cshtml" />
     <Content Include="Views\CategoryParameter\Edit.cshtml" />
     <Content Include="Views\CategoryParameter\ConfirmDelete.cshtml" />
     <Content Include="Views\Product\Create.cshtml" />
+    <Content Include="Views\Product\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

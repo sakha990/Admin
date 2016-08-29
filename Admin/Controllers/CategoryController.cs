@@ -12,10 +12,10 @@ namespace Admin.Controllers
     {
         public ActionResult Index(string parentCategoryName)
         {
-          List<Category> categories = DBManager.GetCategories(parentCategoryName);
-            ViewBag.ParentCategoryName = parentCategoryName; 
-          ViewBag.CategoryTree = DBManager.GetCategoryTree();
-          return View("Index", categories);
+            List<Category> categories = DBManager.GetCategories(parentCategoryName);
+            ViewBag.ParentCategoryName = parentCategoryName;
+            ViewBag.CategoryTree = DBManager.GetCategoryTree();
+            return View("Index", categories);
         }
 
         public ActionResult Create(string parentCategoryName, string previousCategoryName, bool success = false)
@@ -58,23 +58,14 @@ namespace Admin.Controllers
                 ViewBag.Success = false;
                 return View("Create", category);
             }
-    }
-
-    [HttpPost]
-        public JsonResult Delete(Category category)
-        {
-            bool result = DBManager.DeleteCategory(category.CategoryId); 
-            return Json(result);
         }
 
-        //public ActionResult Delete(FormCollection collection)
-        //{
-        //    string parentCategory = Convert.ToString(collection["inputParentCategory"]);
-        //    int categoryId = Convert.ToInt32(collection["inputCategoryId"]);
-        //    DBManager.DeleteCategory(categoryId);
-        //    return RedirectToAction("Index", new { parentCategory = parentCategory });
-
-        //}
+        [HttpPost]
+        public JsonResult Delete(Category category)
+        {
+            bool result = DBManager.DeleteCategory(category.CategoryId);
+            return Json(result);
+        }
 
     }
 }

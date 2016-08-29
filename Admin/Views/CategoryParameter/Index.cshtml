@@ -3,12 +3,19 @@
 @{
     ViewBag.Title = "Category Parameter";
     Layout = "~/Views/Shared/Master.cshtml";
+    string parentCategoryName = "Back to " + ViewBag.ParentCategoryName;
+
 }
 <div class="row">
     <div class="col-md-3">
         @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
     </div>
     <div class="col-md-9">
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink(parentCategoryName, "Index", new { controller = "Category", parentCategoryName = ViewBag.ParentCategoryName })
+        <br /><br /><br />
+
         <h2>@ViewBag.CategoryName</h2>
         <table class="table">
             <tr>
@@ -23,7 +30,7 @@
             {
                 <tr>
                     <td>
-                        Name: 
+                        Name:
                         @Html.DisplayFor(p => categoryParameter.Name)
                         <br />
                         Values:
@@ -90,30 +97,30 @@
         $('#confirmDeleteModal').modal('show');
     }
     function DeleteCategoryParameter() {
-            $.ajax({
-                url: '/CategoryParameter/Delete',
-                data: jsonCategoryParameter,
-                type: 'POST',
-                dataType: "json",
-                success: function (result) {
-                        if (result) {
-                            $('#messageModalTitle').text('Success');
-                            $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonCategoryParameter["Name"] + ' </strong> is successfully deleted. </p>');
-                        }
-                        else {
-                            $('#messageModalTitle').text('Failure');
-                            $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonCategoryParameter["Name"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
-                        }
-                        $('#messageModal').modal('show');
-                },
-                error: function () {
-                     $('#messageModalTitle').text('Failure');
-                     $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonCategoryParameter["Name"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
-                     $('#messageModal').modal('show');
+        $.ajax({
+            url: '/CategoryParameter/Delete',
+            data: jsonCategoryParameter,
+            type: 'POST',
+            dataType: "json",
+            success: function (result) {
+                if (result) {
+                    $('#messageModalTitle').text('Success');
+                    $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonCategoryParameter["Name"] + ' </strong> is successfully deleted. </p>');
                 }
-            });
+                else {
+                    $('#messageModalTitle').text('Failure');
+                    $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonCategoryParameter["Name"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
+                }
+                $('#messageModal').modal('show');
+            },
+            error: function () {
+                $('#messageModalTitle').text('Failure');
+                $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonCategoryParameter["Name"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
+                $('#messageModal').modal('show');
+            }
+        });
     }
-    function ReturnToCategoryPage()  {
+    function ReturnToCategoryPage() {
         location.href = '@Url.Action("Index", "CategoryParameter")?categoryId=' + jsonCategoryParameter["CategoryId"];
     }
 </script>

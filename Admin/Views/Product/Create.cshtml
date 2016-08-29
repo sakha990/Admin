@@ -1,6 +1,7 @@
 ﻿@model Admin.Models.Product
 @using Admin.Repository
 @{
+    string categoryName = "Back to " + ViewBag.CategoryName;
     ViewBag.Title = "Create Product";
     Layout = "~/Views/Shared/Master.cshtml";
     string previousProductName = ViewBag.PreviousProductName;
@@ -14,7 +15,11 @@
     </div>
 
     <div class="col-md-9">
-        
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink(categoryName, "Index", new { controller = "Product", categoryId = ViewBag.CategoryId })
+        <br /><br />
+
         <form class="form-horizontal" action="/Product/Create" method="post">
             <fieldset>
                 <legend>Create New Product</legend>

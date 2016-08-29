@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/Master.cshtml";
 }
-<div class="row">
+<div class="row row-grid">
     <div class="col-md-3">
         @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
     </div>
@@ -22,12 +22,6 @@
                     Created Date
                 </th>
 
-                <th>
-                    Last Updated BY
-                </th>
-                <th>
-                    Last Updated Date
-                </th>
                 <th>
                     @Html.ActionLink("Create New Category", "Create", new { controller = "Category", parentCategoryName = @ViewBag.ParentCategoryName }, new { @class = "btn btn-success" })
                 </th>
@@ -51,7 +45,7 @@
                     <td>
                         @Html.HiddenFor(c => category.ParentCategoryName)
                         @Html.HiddenFor(c => category.CategoryId)
-                       <a class="btn btn-danger btn-sm" value="Delete" onclick="ConfirmDelete('@AdminHelper.ToJson(category)');">Delete</a>
+                        <a class="btn btn-danger btn-sm" value="Delete" onclick="ConfirmDelete('@AdminHelper.ToJson(category)');">Delete</a>
                     </td>
                 </tr>
             }
@@ -109,30 +103,30 @@
         $('#confirmDeleteModal').modal('show');
     }
     function DeleteCategory() {
-            $.ajax({
-                url: '/Category/Delete',
-                data: jsonCategory,
-                type: 'POST',
-                dataType: "json",
-                success: function (result) {
-                        if (result) {
-                            $('#messageModalTitle').text('Success');
-                            $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonCategory["CategoryName"] + ' </strong> is successfully deleted. </p>');
-                        }
-                        else {
-                            $('#messageModalTitle').text('Failure');
-                            $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonCategory["CategoryName"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
-                        }
-                        $('#messageModal').modal('show');
-                },
-                error: function () {
-                     $('#messageModalTitle').text('Failure');
-                     $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonCategory["CategoryName"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
-                     $('#messageModal').modal('show');
+        $.ajax({
+            url: '/Category/Delete',
+            data: jsonCategory,
+            type: 'POST',
+            dataType: "json",
+            success: function (result) {
+                if (result) {
+                    $('#messageModalTitle').text('Success');
+                    $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonCategory["CategoryName"] + ' </strong> is successfully deleted. </p>');
                 }
-            });
+                else {
+                    $('#messageModalTitle').text('Failure');
+                    $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonCategory["CategoryName"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
+                }
+                $('#messageModal').modal('show');
+            },
+            error: function () {
+                $('#messageModalTitle').text('Failure');
+                $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonCategory["CategoryName"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
+                $('#messageModal').modal('show');
+            }
+        });
     }
-    function ReturnToParentCategoryPage()  {
+    function ReturnToParentCategoryPage() {
         location.href = '@Url.Action("Index", "Category")?parentCategoryName=' + jsonCategory["ParentCategoryName"];
     }
 </script>
