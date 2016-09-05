@@ -1,0 +1,130 @@
+﻿@model IEnumerable<Admin.Models.CategoryParameter>
+@using Admin.Repository;
+@{
+    ViewBag.Title = "Category Parameter";
+    Layout = "~/Views/Shared/Master.cshtml";
+    string parentCategoryName = "Back to " + ViewBag.ParentCategoryName;
+
+}
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+    <div class="col-md-9">
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink(parentCategoryName, "Index", new { controller = "Category", parentCategoryName = ViewBag.ParentCategoryName })
+        <br /><br /><br />
+
+        <h2>@ViewBag.CategoryName</h2>
+        <table class="table">
+            <tr>
+                <th>
+                    Parameter Name
+                </th>
+                <th>
+                    @Html.ActionLink("Create New Parameter", "Create", new { controller = "CategoryParameter", categoryId = @ViewBag.CategoryId }, new { @class = "btn btn-success" })
+                </th>
+            </tr>
+            @foreach (var categoryParameter in Model)
+            {
+                <tr>
+                    <td>
+                        Name:
+                        @Html.DisplayFor(p => categoryParameter.Name)
+                        <br />
+                        Values:
+                        @Html.DisplayFor(p => categoryParameter.Values)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { controller = "CategoryParameter", categoryParameterId = categoryParameter.ParameterId }, new { @class = "btn btn-success  btn-sm" })
+                        <a class="btn btn-danger btn-sm" value="Delete" onclick="ConfirmDelete('@AdminHelper.ToJson(categoryParameter)');">Delete</a>
+                        @Html.HiddenFor(p => categoryParameter.ParameterId)
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+@*Confirmation Modal*@
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+            </div>
+            <div id="deleteModalBody" class="modal-body">
+                <p>Are you sure, you want to delete following Parameter? </p>
+                <p id="modalParameterName" class="text-danger"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <a class="btn btn-danger btn-ok" data-dismiss="modal" onclick="DeleteCategoryParameter();">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Success Message Modal*@
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="messageModalTitle"></h4>
+            </div>
+            <div id="messageModalBody" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ReturnToCategoryPage();">Return to Category</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+
+<script type="text/javascript">
+    var jsonParameter;
+
+    function ConfirmDelete(categoryParameter) {
+        jsonCategoryParameter = jQuery.parseJSON(categoryParameter);
+        $('#modalParameterName').text(jsonCategoryParameter["Name"]);
+        $('#confirmDeleteModal').modal('show');
+    }
+    function DeleteCategoryParameter() {
+        $.ajax({
+            url: '/CategoryParameter/Delete',
+            data: jsonCategoryParameter,
+            type: 'POST',
+            dataType: "json",
+            success: function (result) {
+                if (result) {
+                    $('#messageModalTitle').text('Success');
+                    $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonCategoryParameter["Name"] + ' </strong> is successfully deleted. </p>');
+                }
+                else {
+                    $('#messageModalTitle').text('Failure');
+                    $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonCategoryParameter["Name"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
+                }
+                $('#messageModal').modal('show');
+            },
+            error: function () {
+                $('#messageModalTitle').text('Failure');
+                $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonCategoryParameter["Name"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
+                $('#messageModal').modal('show');
+            }
+        });
+    }
+    function ReturnToCategoryPage() {
+        location.href = '@Url.Action("Index", "CategoryParameter")?categoryId=' + jsonCategoryParameter["CategoryId"];
+    }
+</script>
+
+
+
+

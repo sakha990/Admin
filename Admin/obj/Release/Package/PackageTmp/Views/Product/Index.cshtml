@@ -1,0 +1,180 @@
+﻿@model PagedList.IPagedList<Admin.Models.Product>
+@using Admin.Repository;
+@using PagedList.Mvc;
+
+@{
+    string parentCategoryName = "Back to " + ViewBag.ParentCategoryName;
+    ViewBag.Title = "Products";
+    Layout = "~/Views/Shared/Master.cshtml";
+    int categoryId = (int)ViewBag.CategoryId;
+    string currentSort = ViewBag.CurrentSort;
+    if (string.IsNullOrEmpty(currentSort))
+    {
+        currentSort = "productname";
+    }
+}
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+    <div class="col-md-9">
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink(parentCategoryName, "Index", new { controller = "Category", parentCategoryName = ViewBag.ParentCategoryName })
+        <br /><br />
+
+        <h2>@ViewBag.CategoryName</h2>
+
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.ActionLink("Product Name", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.ProductNameSortParam))
+                    @Html.SortIdentifier(currentSort, "productname")
+
+                </th>
+                <th>
+                    @Html.ActionLink("Created By", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.CreatedBySortParam))
+                    @Html.SortIdentifier(currentSort, "createdby")
+
+                </th>
+                <th>
+                    @Html.ActionLink("Created Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.CreatedDateSortParam))
+                    @Html.SortIdentifier(currentSort, "createddate")
+                </th>
+                @*<th>
+                    @Html.ActionLink("Last Updated BY", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.LastUpdatedBySortParam))
+                    @Html.SortIdentifier(currentSort, "lastupdatedby")
+                </th>
+
+                <th>
+                    @Html.ActionLink("Last Updated Date", "Index", Request.QueryString.ToRouteValueDictionary("sortOrder", (string)ViewBag.LastUpdatedDateSortParam))
+                    @Html.SortIdentifier(currentSort, "lastupdateddate")
+                </th>*@
+
+                <th>
+                    @Html.ActionLink("Create New Product", "Create", new { controller = "Product", categoryId = @ViewBag.CategoryId }, new { @class = "btn btn-success" })
+                </th>
+            </tr>
+            @foreach (var product in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(p => product.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.CreatedBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.CreatedDate)
+                    </td>
+                    @*<td>
+                        @Html.DisplayFor(p => product.LastUpdatedBy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(p => product.LastUpdatedDate)
+                    </td>*@
+                    <td>
+                        @Html.HiddenFor(p => product.CategoryId)
+                        @Html.HiddenFor(p => product.ProductId)
+                        <a class="btn btn-danger btn-sm" value="Delete" onclick="ConfirmDelete('@AdminHelper.ToJson(product)');">Delete</a>
+                    </td>
+                </tr>
+
+            }
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-10">
+        @if (Model.PageCount > 1)
+        {
+            <div class="pager">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new
+           {
+               categoryId = (int)@ViewBag.CategoryId,
+               page,
+               sortOrder = ViewBag.currentSort
+           }))
+                Side @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) af @Model.PageCount
+            </div>
+        }
+    </div>
+</div>
+
+@*Confirmation Modal*@
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+            </div>
+            <div id="deleteModalBody" class="modal-body">
+                <p>Are you sure, you want to delete following product? </p>
+                <p id="modalProductName" class="text-danger"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
+                <a class="btn btn-danger btn-ok" data-dismiss="modal" onclick="DeleteProduct();">Yes</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Success Message Modal*@
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="messageModalTitle"></h4>
+            </div>
+            <div id="messageModalBody" class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="ReturnToCategoryPage();">Return to Products</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/bootstrap")
+<script type="text/javascript">
+    var jsonProduct;
+
+    function ConfirmDelete(product) {
+        jsonProduct = jQuery.parseJSON(product);
+        $('#modalProductName').text(jsonProduct["ProductName"]);
+        $('#confirmDeleteModal').modal('show');
+    }
+    function DeleteProduct() {
+        $.ajax({
+            url: '/Product/Delete',
+            data: jsonProduct,
+            type: 'POST',
+            dataType: "json",
+            success: function (result) {
+                if (result) {
+                    $('#messageModalTitle').text('Success');
+                    $('#messageModalBody').html('<p><img src="Content/Assets/Images/success.png" /> <strong class="text-success"> ' + jsonProduct["ProductName"] + ' </strong> is successfully deleted. </p>');
+                }
+                else {
+                    $('#messageModalTitle').text('Failure');
+                    $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> ' + jsonProduct["ProductName"] + ' is <strong> NOT deleted! </strong> Please Contact administrator. </p>');
+                }
+                $('#messageModal').modal('show');
+            },
+            error: function () {
+                $('#messageModalTitle').text('Failure');
+                $('#messageModalBody').html('<p class="text-danger"> <img src="Content/Assets/Images/error.png" /> <strong> ' + jsonProduct["ProductName"] + '</strong> is NOT deleted! Please Contact administrator. </p>');
+                $('#messageModal').modal('show');
+            }
+        });
+    }
+    function ReturnToCategoryPage() {
+        location.href = '@Url.Action("Index", "Product")?categoryId=' + jsonProduct["CategoryId"];
+    }
+</script>
+

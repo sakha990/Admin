@@ -12,11 +12,55 @@ namespace Admin.Repository
     public static class DBManager
     {
         // Category Section
+        public static List<Note> GetNotes()
+        {
+            List<Note> noteList = new List<Note>();
+            string queryString = @"SELECT noteID,noteText,createdBy,createdDate FROM Compare.dbo.Notes order by createdDate desc";
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Note note = new Note();
+                    note.NoteId = Convert.ToInt32(reader[0]);
+                    note.NoteText = Convert.ToString(reader[1]);
+                    note.CreatedBy = Convert.ToString(reader[2]);
+                    note.CreatedDate = Convert.ToDateTime(reader[3]);
+                    noteList.Add(note);
+                }
+
+                return noteList;
+            }
+
+        }
+
+        public static bool CreateNote(Note note)
+        {
+            string queryString = @"INSERT INTO Compare.dbo.Notes(noteText,createdDate,createdBy) VALUES(@noteText,SYSDATETIME(),@createdBy)";
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                command.Parameters.Add("@noteText", SqlDbType.VarChar).Value = note.NoteText;
+                command.Parameters.Add("@createdBy", SqlDbType.VarChar).Value = note.CreatedBy;
+                
+                if (command.ExecuteNonQuery() == 1)
+                    return true;
+                else
+                    return false;
+            }
+        }
+
         public static bool IsValid(string userName, string password)
         {
             bool isValid = false;
             string queryString = @"SELECT COUNT(*) 
-                                   FROM CompareAdmin.dbo.Users WHERE userName = @userName AND password = @password ";
+                                   FROM Compare.dbo.Users WHERE userName = @userName AND password = @password ";
 
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
@@ -34,7 +78,7 @@ namespace Admin.Repository
         {
             string realName = string.Empty;
             string queryString = @"SELECT realName 
-                                   FROM CompareAdmin.dbo.Users WHERE userName = @userName ";
+                                   FROM Compare.dbo.Users WHERE userName = @userName ";
 
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
@@ -50,7 +94,7 @@ namespace Admin.Repository
         public static List<string> GetParerntCategoryNames()
         {
             List<string> parentCategoryNamesList = new List<string>();
-            string queryString = @"SELECT parentcategoryName FROM compareadmin.dbo.ParentCategories";
+            string queryString = @"SELECT parentcategoryName FROM Compare.dbo.ParentCategories";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -70,7 +114,7 @@ namespace Admin.Repository
         public static List<Category> GetCategories(string parentCategoryName)
         {
             List<Category> categoryList = new List<Category>();
-            string queryString = @"SELECT categoryID,categoryName,parentCategoryName,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate FROM compareadmin.dbo.Categories WHERE parentCategoryName = @parentCategoryName ";
+            string queryString = @"SELECT categoryID,categoryName,parentCategoryName,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate FROM Compare.dbo.Categories WHERE parentCategoryName = @parentCategoryName ";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -115,7 +159,7 @@ namespace Admin.Repository
         public static Category GetCategoryObject(int categoryId)
         {
             Category category = new Category();
-            string queryString = @"SELECT categoryID,categoryName,parentCategoryName,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate FROM compareadmin.dbo.Categories WHERE categoryID = @categoryID";
+            string queryString = @"SELECT categoryID,categoryName,parentCategoryName,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate FROM Compare.dbo.Categories WHERE categoryID = @categoryID";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -142,7 +186,7 @@ namespace Admin.Repository
         public static List<CategoryParameter> GetCategoryParameters(int categoryId)
         {
             List<CategoryParameter> categoryParameters = new List<CategoryParameter>();
-            string queryString = @"select categoryParameterID,categoryID,parameterName,parameterValues,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate from CompareAdmin.dbo.CategoryParameters WHERE categoryID = @categoryId";
+            string queryString = @"select categoryParameterID,categoryID,parameterName,parameterValues,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate from Compare.dbo.CategoryParameters WHERE categoryID = @categoryId";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -171,7 +215,7 @@ namespace Admin.Repository
         public static CategoryParameter GetCategoryParameter(int categoryParameterId)
         {
             CategoryParameter categoryParameter = new CategoryParameter();
-            string queryString = @"select categoryParameterID,categoryID,parameterName,parameterValues,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate from CompareAdmin.dbo.CategoryParameters WHERE categoryParameterID = @categoryParameterId";
+            string queryString = @"select categoryParameterID,categoryID,parameterName,parameterValues,createdBy,createdDate,lastUpdatedBy,lastUpdatedDate from Compare.dbo.CategoryParameters WHERE categoryParameterID = @categoryParameterId";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -196,7 +240,7 @@ namespace Admin.Repository
         }
         public static bool CreateParentCategory(string parentCategoryName)
         {
-            string queryString = @"INSERT INTO CompareAdmin.dbo.ParentCategories VALUES(@parentCategoryName);";
+            string queryString = @"INSERT INTO Compare.dbo.ParentCategories VALUES(@parentCategoryName);";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -211,7 +255,7 @@ namespace Admin.Repository
         }
         public static bool CreateCategory(Category category,string userName)
         {
-            string queryString = @"INSERT INTO CompareAdmin.dbo.Categories(categoryName, parentCategoryName, createdBy, createdDate) VALUES(@category, @parentCategory, @createdBy, SYSDATETIME());";
+            string queryString = @"INSERT INTO Compare.dbo.Categories(categoryName, parentCategoryName, createdBy, createdDate) VALUES(@category, @parentCategory, @createdBy, SYSDATETIME());";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -230,7 +274,7 @@ namespace Admin.Repository
 
         public static bool DeleteCategory(int categoryId)
         {
-            string queryString = @"DELETE FROM CompareAdmin.dbo.Categories WHERE categoryID = @categoryID";
+            string queryString = @"DELETE FROM Compare.dbo.Categories WHERE categoryID = @categoryID";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -247,7 +291,7 @@ namespace Admin.Repository
 
         public static bool UpdateCategoryParameter(string userName,CategoryParameter categoryParameter)
         {
-            string queryString = @" UPDATE CompareAdmin.dbo.CategoryParameters
+            string queryString = @" UPDATE Compare.dbo.CategoryParameters
                                     SET parameterValues = @parameterValues
                                        ,lastUpdatedBy = @lastupdatedBy
                                        ,lastUpdatedDate = SYSDATETIME()
@@ -272,7 +316,7 @@ namespace Admin.Repository
 
         public static bool DeleteCategoryParameter(int categoryId, string parameterName)
         {
-            string queryString = @" DELETE FROM CompareAdmin.dbo.CategoryParameters
+            string queryString = @" DELETE FROM Compare.dbo.CategoryParameters
                                     WHERE categoryID = @categoryID 
                                     AND   parameterName = @parameterName";
 
@@ -294,7 +338,7 @@ namespace Admin.Repository
 
         public static bool CreateCategoryParameter(CategoryParameter categoryParameter, string userName)
         {
-            string queryString = @"INSERT INTO CompareAdmin.dbo.CategoryParameters(categoryID, parameterName,parameterValues,createdBy,createdDate) VALUES(@categoryID, @parameterName,@parameterValues, @createdBy, SYSDATETIME());";
+            string queryString = @"INSERT INTO Compare.dbo.CategoryParameters(categoryID, parameterName,parameterValues,createdBy,createdDate) VALUES(@categoryID, @parameterName,@parameterValues, @createdBy, SYSDATETIME());";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -315,7 +359,7 @@ namespace Admin.Repository
         public static string GetCategoryParameterValues(int categoryId, string parameterName)
         {
             string parameterValue = string.Empty;
-            string queryString = @"SELECT parameterValues FROM CompareAdmin.dbo.CategoryParameters WHERE categoryID = @categoryID AND parameterName = @parameterName";
+            string queryString = @"SELECT parameterValues FROM Compare.dbo.CategoryParameters WHERE categoryID = @categoryID AND parameterName = @parameterName";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
@@ -333,7 +377,7 @@ namespace Admin.Repository
         {
             double _productsCount = 0;
             string queryString = @"SELECT COUNT(*) 
-                                   FROM ( SELECT productID,productName FROM CompareAdmin.dbo.Products WHERE categoryID = "+ categoryId + ") p1";
+                                   FROM ( SELECT productID,productName FROM Compare.dbo.Products WHERE categoryID = "+ categoryId + ") p1";
 
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
@@ -394,7 +438,7 @@ namespace Admin.Repository
 
         public static bool DeleteProduct(int productId)
         {
-            string queryString = @"DELETE FROM CompareAdmin.dbo.Products WHERE productID = @productID";
+            string queryString = @"DELETE FROM Compare.dbo.Products WHERE productID = @productID";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {

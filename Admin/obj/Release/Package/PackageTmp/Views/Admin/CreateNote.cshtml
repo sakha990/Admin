@@ -1,0 +1,68 @@
+﻿@model Admin.Models.Note
+@using Admin.Repository
+
+@{
+    ViewBag.Title = "Create Note";
+    Layout = "~/Views/Shared/Master.cshtml";
+    string previousItemName = ViewBag.PreviousNote;
+    bool success = (bool)ViewBag.Success;
+
+}
+
+<h2>CreateNote</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+
+    <div class="col-md-9">
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink("Home", "Index", new { controller = "Admin" })
+        <br /><br /><br />
+        <form class="form-horizontal" action="/Admin/CreateNote" method="post">
+            <fieldset>
+                <legend>Create Note</legend>
+                <div class="form-group">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    @Html.GetMessage(success, previousItemName)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NoteText, new { @class = "control-label col-md-2" })
+                    <div class="col-lg-10">
+                        @Html.TextAreaFor(model => model.NoteText, new { @cols = "100", @rows = "6", @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("Description", "*", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

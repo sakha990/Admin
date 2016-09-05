@@ -1,0 +1,71 @@
+﻿@model Admin.Models.CategoryParameter
+@using Admin.Repository
+@{
+    string categoryName = "Back to " + ViewBag.CategoryName;
+    ViewBag.Title = "Create CategoryParameter";
+    Layout = "~/Views/Shared/Master.cshtml";
+    string previousItem = ViewBag.PreviousItem;
+    bool success = (bool)ViewBag.Success;
+}
+
+<div class="row">
+    <div class="col-md-3">
+        @Html.Partial("~/Views/Shared/CategoryTree.cshtml", (List<Admin.Models.CategoryTree>)ViewBag.CategoryTree)
+    </div>
+
+    <div class="col-md-9">
+        <br />
+        <span class='glyphicon glyphicon-circle-arrow-left' style='color: green'></span>
+        @Html.ActionLink(categoryName, "Index", new { controller = "CategoryParameter", categoryId = ViewBag.CategoryId })
+        <br /><br /><br />
+
+        <form class="form-horizontal" action="/CategoryParameter/Create" method="post">
+            <fieldset>
+                <legend>Create New Parameter</legend>
+                <div class="form-group">
+                    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    @Html.GetMessage(success, previousItem)
+                </div>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label">Parent Category Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" value="@ViewBag.ParentCategoryName" readonly="readonly">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputParentCategory" class="col-lg-2 control-label"> Category Name</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" value="@ViewBag.CategoryName" readonly="readonly">
+                    </div>
+                </div>
+                <input type="hidden" name="inputCategoryId" value="@ViewBag.CategoryId" />
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Name, new { @class = "control-label col-md-2" })
+                    <div class="col-lg-10">
+                        @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("Name", "*", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Values, new { @class = "control-label col-md-2" })
+                    <div class="col-lg-10">
+                        @Html.TextAreaFor(model => model.Values, new { @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("Name", "*", new { @class = "text-danger" })
+                        <span class="help-block">Comma separated values.</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button type="reset" class="btn btn-default">Cancel</button>
+                        <button type="submit" class="btn btn-success">Create</button>
+                        @Html.HiddenFor(modal => modal.CategoryId)
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+

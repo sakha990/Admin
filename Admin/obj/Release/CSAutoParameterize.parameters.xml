@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="MatchConnectionString-Web.config Connection String" description="MatchConnectionString Connection String used in web.config by the application to access the database." defaultValue="server=comparedbserver.database.windows.net;database=Compare;uid=sakha990;password=Surface,82;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\GitHub\\Admin\\Admin\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='MatchConnectionString']/@connectionString" />
+  </parameter>
+</parameters>

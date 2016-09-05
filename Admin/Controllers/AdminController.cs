@@ -1,6 +1,9 @@
-﻿using System.Security.Claims;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
+using Admin.Models;
 using Admin.Repository;
 
 namespace Admin.Controllers
@@ -16,10 +19,41 @@ namespace Admin.Controllers
             var claimsIdentity = User.Identity as ClaimsIdentity;
             ViewBag.Name = claimsIdentity.FindFirst(ClaimTypes.Name).Value;
 
-            return View();
+            List<Note> notes = DBManager.GetNotes();
+            return View(notes);
 
         }
 
+        public ActionResult CreateNote(string previousNote, bool success = false)
+        {
+            ViewBag.PreviousNote = previousNote;
+            ViewBag.Success = success;
+            ViewBag.categoryTree = DBManager.GetCategoryTree();
+            return View("CreateNote");
+        }
+
+        [HttpPost]
+        public ActionResult CreateNote(Note note)
+        {
+            var claimsIdentity = User.Identity as ClaimsIdentity;
+            note.CreatedBy = claimsIdentity.FindFirst(ClaimTypes.Name).Value;
+
+            if (ModelState.IsValid)
+            {
+
+                bool success = DBManager.CreateNote(note);
+                return RedirectToAction("CreateNote", new { previousNote = "Note", success = success });
+            }
+            else
+            {
+
+                ViewBag.CategoryTree = DBManager.GetCategoryTree();
+                ViewBag.Success = false;
+                return View("CreateNote", note);
+            }
+        }
+
+        
         [HttpPost]
         public ActionResult Create(FormCollection collection)
         {

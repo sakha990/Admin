@@ -1,0 +1,25 @@
+﻿@model List<Admin.Models.CategoryTree>
+<table class="table">
+    @foreach (var parentCategory in Model)
+    {
+            <tr>
+                <td>
+                    @Html.ActionLink(parentCategory.ParentCategoryName, "Index", "Category", new { parentCategoryName = parentCategory.ParentCategoryName }, null)
+                    <br />
+                    
+                    @for (int i = 0; i < parentCategory.Categories.Count(); i++)
+                    {
+                        <span>&nbsp;</span><span>&nbsp;</span>
+                        @Html.ActionLink(parentCategory.Categories[i].CategoryName, "Index", "Product",new { categoryId = parentCategory.Categories[i].CategoryId }, new { @class = "a category" })
+
+                        if (i % 2 == 3)
+                        {
+                            <br />
+                        }
+                    }
+                </td>
+        </tr>
+       }
+</table>
+
+
