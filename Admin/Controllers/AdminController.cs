@@ -8,7 +8,7 @@ using Admin.Repository;
 
 namespace Admin.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : AppController
     {
         public ActionResult Index(string previousParentCategoryName, bool success = false)
         {
@@ -16,10 +16,9 @@ namespace Admin.Controllers
             ViewBag.Success = success;
             ViewBag.CategoryTree = DBManager.GetCategoryTree();
 
-            var claimsIdentity = User.Identity as ClaimsIdentity;
-            ViewBag.Name = claimsIdentity.FindFirst(ClaimTypes.Name).Value;
-
-            List<Note> notes = DBManager.GetNotes();
+            //var claimsIdentity = User.Identity as ClaimsIdentity;
+            ViewBag.Name = CurrentUser.Name;
+            List <Note> notes = DBManager.GetNotes();
             return View(notes);
 
         }
@@ -84,11 +83,14 @@ namespace Admin.Controllers
             if (DBManager.IsValid(userName, password))
             {
                 var identity = new ClaimsIdentity(
-                  new[] { 
-              // adding following 2 claim just for supporting default antiforgery provider
-              //new Claim(ClaimTypes.NameIdentifier, userName),
-              //new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string"),
-              new Claim(ClaimTypes.Name,DBManager.GetRealName(userName)),
+                  new[] {
+                      // adding following 2 claim just for supporting default antiforgery provider
+                      //new Claim(ClaimTypes.NameIdentifier, userName),
+                      //new Claim("http://schemas.microsoft.com/accesscontrolservice/2010/07/claims/identityprovider", "ASP.NET Identity", "http://www.w3.org/2001/XMLSchema#string"),
+                      new Claim(ClaimTypes.NameIdentifier,userName),
+                      new Claim(ClaimTypes.Name,DBManager.GetRealName(userName)
+              
+              ),
                   }, "ApplicationCookie");
 
                 var ctx = Request.GetOwinContext();

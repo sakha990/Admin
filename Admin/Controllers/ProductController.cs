@@ -64,6 +64,9 @@ namespace Admin.Controllers
             ViewBag.ParentCategoryName = category.ParentCategoryName;
             ViewBag.CategoryName = category.CategoryName;
             ViewBag.CategoryTree = DBManager.GetCategoryTree();
+            IEnumerable<SelectListItem> brands = DBManager.GetBrands()
+                 .Select(x => new SelectListItem { Text = x.BrandName, Value = x.BrandId.ToString() }).ToList();
+            ViewBag.Brands = brands;
             return View("Create");
         }
 
@@ -90,9 +93,9 @@ namespace Admin.Controllers
 
                 }
                 else
-                {     
-
-                    bool success = DBManager.CreateProduct("sakha", product.CategoryId, product.ProductName);
+                {
+                    product.CreatedBy = "a001";
+                    bool success = DBManager.CreateProduct(product);
                     return RedirectToAction("Create", new { categoryId = product.CategoryId, previousProductName = product.ProductName,success = success });
                 }
             }

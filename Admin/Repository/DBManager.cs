@@ -12,6 +12,29 @@ namespace Admin.Repository
     public static class DBManager
     {
         // Category Section
+        public static List<Brand> GetBrands()
+        {
+            List<Brand> brandList = new List<Brand>();
+            string queryString = @"SELECT brandID,brandName from Compare.dbo.Brands order by brandName";
+            using (SqlConnection connection = new SqlConnection(
+                           ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(queryString, connection);
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Brand brand = new Brand();
+                    brand.BrandId = Convert.ToInt32(reader[0]);
+                    brand.BrandName = Convert.ToString(reader[1]);
+                    brandList.Add(brand);
+                }
+
+                return brandList;
+            }
+
+        }
         public static List<Note> GetNotes()
         {
             List<Note> noteList = new List<Note>();
@@ -389,18 +412,19 @@ namespace Admin.Repository
             return _productsCount;
         }
 
-        public static bool CreateProduct(string userName,int categoryId,string productName)
+        public static bool CreateProduct(Product product)
         {
-            string queryString = @"INSERT INTO dbo.Products(productName,categoryID,createdBy,createdDate)
-                                                    VALUES(@productName,@categoryID,@createdBy,SYSDATETIME())";
+            string queryString = @"INSERT INTO dbo.Products(productName,brandID,categoryID,createdBy,createdDate)
+                                                    VALUES(@productName,@brandID,@categoryID,@createdBy,SYSDATETIME())";
             using (SqlConnection connection = new SqlConnection(
                            ConfigurationManager.ConnectionStrings["MatchConnectionString"].ToString()))
             {
                 connection.Open();
                 SqlCommand command = new SqlCommand(queryString, connection);
-                command.Parameters.Add("@productName", SqlDbType.NVarChar).Value = productName;
-                command.Parameters.Add("@categoryID", SqlDbType.Int).Value = categoryId;
-                command.Parameters.Add("@createdBy", SqlDbType.VarChar).Value = userName;
+                command.Parameters.Add("@productName", SqlDbType.NVarChar).Value = product.ProductName;
+                command.Parameters.Add("@brandID", SqlDbType.Int).Value = product.BrandId;
+                command.Parameters.Add("@categoryID", SqlDbType.Int).Value = product.CategoryId;
+                command.Parameters.Add("@createdBy", SqlDbType.VarChar).Value =product.CreatedBy;
                 if (command.ExecuteNonQuery() == 1)
                     return true;
                 else

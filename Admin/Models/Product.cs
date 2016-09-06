@@ -15,6 +15,10 @@ namespace Admin.Models
         public string ProductName { get; set; }
 
         [Required]
+        [DisplayName("Brand")]
+        public int BrandId { get; set; }
+
+        [Required]
         public int CategoryId { get; set; }
 
         public string CreatedBy { get; set; }

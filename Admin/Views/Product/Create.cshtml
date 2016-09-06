@@ -4,6 +4,7 @@
     string categoryName = "Back to " + ViewBag.CategoryName;
     ViewBag.Title = "Create Product";
     Layout = "~/Views/Shared/Master.cshtml";
+    IEnumerable<SelectListItem> brands = ViewBag.Brands;
     string previousProductName = ViewBag.PreviousProductName;
     bool success = (bool)ViewBag.Success;
 }
@@ -40,6 +41,16 @@
                         <input type="text" class="form-control" name="inputCategory" value="@ViewBag.CategoryName" readonly="readonly">
                     </div>
                 </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BrandId, new { @class = "control-label col-md-2" })
+                    <div class="col-lg-10">
+                        @Html.DropDownListFor(model => model.BrandId,brands, new { @class = "form-control", @style = "display:inline" })
+                        @Html.ValidationMessage("Brand", "*", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+
                 <div class="form-group">
                     @Html.LabelFor(model => model.ProductName, new { @class = "control-label col-md-2" })
                     <div class="col-lg-10">
